@@ -4,7 +4,7 @@
 <img src="https://img.shields.io/badge/Platform-linux | windows | macos-9cf">&nbsp;&nbsp;&nbsp;
 <img src="https://img.shields.io/badge/Node.js-14.7.6-yellowgreen">&nbsp;&nbsp;&nbsp; 
 <img src="https://img.shields.io/badge/Frameworks-None-blueviolet">&nbsp;&nbsp;&nbsp; 
-<img src="https://img.shields.io/badge/license-GPL v3.0-lightgrey">&nbsp;&nbsp;&nbsp; 
+<img src="https://img.shields.io/badge/license-GPL 3.0-lightgrey">&nbsp;&nbsp;&nbsp; 
 <img src="https://img.shields.io/badge/Contributions-Welcome-brightgreen">&nbsp;&nbsp;&nbsp; 
 </p>
 
