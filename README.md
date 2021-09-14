@@ -11,7 +11,9 @@
 <h1 align="center"> nodeMiniAdmin</h1>
 <p align="center">
   <img width="800" src="https://user-images.githubusercontent.com/60380578/133299257-cf16d5e7-d05c-4251-ad36-3544e28ad8dc.png" alt="nodeMiniAdmin Result Screen">
-  <img width="860" src="https://user-images.githubusercontent.com/60380578/133299093-28b895dc-d1e9-4b63-9505-f11fa7eebc3f.png" alt="nodeMiniAdmin Show DB Tables Screen">
+  <br><br>
+  <img width="800" src="https://user-images.githubusercontent.com/60380578/133301946-dc676179-3a23-4dad-8658-b34190c8370a.png" alt="nodeMiniAdmin Show DB Tables Screen">
+  <br><br>
   <img width="800" src="https://user-images.githubusercontent.com/60380578/133299208-81fdc9bb-6868-4091-9f38-e116e1491020.png" alt="nodeMiniAdmin Query Validation Screen">
   <br><br>
   <img width="400" src="https://user-images.githubusercontent.com/60380578/133299151-ab56514e-7e66-464a-83f5-958bbf44b5a8.png" alt="nodeMiniAdmin Add MySQL Connection Screen">
