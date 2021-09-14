@@ -1,23 +1,26 @@
+<p align="center">
 <img src="https://img.shields.io/badge/Version-1.0.0-blue">&nbsp;&nbsp;&nbsp; 
+<img src="https://img.shields.io/badge/Open Source-♥-red">&nbsp;&nbsp;&nbsp; 
+<img src="https://img.shields.io/badge/Platform-linux | windows | macos-9cf">&nbsp;&nbsp;&nbsp;
 <img src="https://img.shields.io/badge/Node.js-14.7.6-yellowgreen">&nbsp;&nbsp;&nbsp; 
 <img src="https://img.shields.io/badge/Frameworks-None-blueviolet">&nbsp;&nbsp;&nbsp; 
-<img src="https://img.shields.io/badge/Open Source-♥-red">&nbsp;&nbsp;&nbsp; 
-<img src="https://img.shields.io/badge/PRs-Welcome-brightgreen">&nbsp;&nbsp;&nbsp; 
+<img src="https://img.shields.io/badge/license-GPL v3.0-lightgrey">&nbsp;&nbsp;&nbsp; 
+<img src="https://img.shields.io/badge/Contributions-Welcome-brightgreen">&nbsp;&nbsp;&nbsp; 
+</p>
 
 <h1 align="center"> nodeMiniAdmin</h1>
 <p align="center">
-  <img width="200" src="http://material-bread.org/logo-shadow.svg" alt="Material Bread logo">
+  <img width="800" src="https://user-images.githubusercontent.com/60380578/133299257-cf16d5e7-d05c-4251-ad36-3544e28ad8dc.png" alt="nodeMiniAdmin Result Screen">
+  <img width="860" src="https://user-images.githubusercontent.com/60380578/133299093-28b895dc-d1e9-4b63-9505-f11fa7eebc3f.png" alt="nodeMiniAdmin Show DB Tables Screen">
+  <img width="800" src="https://user-images.githubusercontent.com/60380578/133299208-81fdc9bb-6868-4091-9f38-e116e1491020.png" alt="nodeMiniAdmin Query Validation Screen">
+  <br><br>
+  <img width="400" src="https://user-images.githubusercontent.com/60380578/133299151-ab56514e-7e66-464a-83f5-958bbf44b5a8.png" alt="nodeMiniAdmin Add MySQL Connection Screen">
 </p>
 
 <a href="rahuspatil.in/nodeminiadmin/demo"><h1 align="center">Live Demo</h1></a>
 
 ## About nodeMiniAdmin
-Its a single-file, minimal and extremely lightweight tool for quick and easy access to MySQL databases. Focused on usability and simplicity. Written in Javascript, it requires Node.js runtime.
-<br>
-<br>**_-No framework used_**
-<br>**_-Portable- everything in a single file_**
-<br>**_-Extremely lightweight_**
-<br>**_-Easy to setup and use_**
+Its a minimal and lightweight tool for quick and easy access to MySQL databases. Focused on usability and simplicity. Written in Javascript, its a single-file app and requires Node.js to run. Its very easy to setup and use.
 
 ## How to install
 1. Download or clone this repo to a directory of your choice.
@@ -27,16 +30,22 @@ git clone https://github.com/patil-rahuls/nodeMiniAdmin.git
 2. Install Node.js (if you haven't already) on your machine.
 3. Open up terminal in the directory (where the file `nma.js` exists) and execute `node nma.js`.
 4. It might ask you to install the `sync-mysql` module. Please install it and repeat step 3.
-5. Open `https://localhost:3000/index` in your browser.
-<br>Done!
+
+Navigate to `https://localhost:3000/index` in your browser to use the app.
 
 ## Links
-<a href="rahuspatil.in/nodeminiadmin/demo">Screenshots</a>
+<a href="rahuspatil.in/nodeminiadmin/">Project Page</a>
 <br><a href="rahuspatil.in/nodeminiadmin/demo">Live Demo</a>
-<br><a href="rahuspatil.in/nodeminiadmin/demo">My Website</a>
+
+## The WOW factors
+**_-Ease of use_**
+<br>**_-No framework used_**
+<br>**_-Easy to setup_**
+<br>**_-Portable- everything in a single file_**
+<br>**_-Extremely lightweight_**
 
 ## Troubleshooting
-1. If port 3000 is already in use or blocked, free it up using the following commands.  
+1. If port 3000 is already in use or blocked, free it up using the following commands.
 linux users: `sudo fuser -k 8000/tcp`  
 OSX users  : `sudo lsof -t -i tcp:8000 | xargs kill -9`  
-2. If file I/O errors or exceptions occur, try running the app using elevated privileges `sudo node nma.js`.
+2. If you encounter file I/O errors or exceptions, try running the app with elevated privileges `sudo node nma.js`.
