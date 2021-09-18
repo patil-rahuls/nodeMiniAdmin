@@ -48,6 +48,6 @@ Navigate to `https://localhost:3000/index` in your browser to use the app.
 
 ## Troubleshooting
 1. If port 3000 is already in use or blocked, free it up using the following commands.
-linux users: `sudo fuser -k 8000/tcp`  
-OSX users  : `sudo lsof -t -i tcp:8000 | xargs kill -9`  
-2. If you encounter file I/O errors or exceptions, try running the app with elevated privileges `sudo node nma.js`.
+<br>linux users: <br>`sudo fuser -k 8000/tcp`  
+OSX users  : <br>`sudo lsof -t -i tcp:8000 | xargs kill -9`  
+2. If you encounter file I/O errors or exceptions, try running the app with elevated privileges <br>`sudo node nma.js`.
