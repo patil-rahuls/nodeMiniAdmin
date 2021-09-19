@@ -19,7 +19,7 @@
   <img width="400" src="https://user-images.githubusercontent.com/60380578/133299151-ab56514e-7e66-464a-83f5-958bbf44b5a8.png" alt="nodeMiniAdmin Add MySQL Connection Screen">
 </p>
 
-<a href="rahuspatil.in/nodeminiadmin/demo"><h1 align="center">Live Demo</h1></a>
+<a href="https://nodeminiadmin.herokuapp.com/index"><h1 align="center">Live Demo</h1></a>
 
 ## About nodeMiniAdmin
 Its a minimal and lightweight tool for quick and easy access to MySQL databases. Focused on usability and simplicity. Written in Javascript, its a single-file app and requires Node.js to run. Its very easy to setup and use.
@@ -37,7 +37,7 @@ Navigate to `https://localhost:3000/index` in your browser to use the app.
 
 ## Links
 <a href="rahuspatil.in/nodeminiadmin/">Project Page</a>
-<br><a href="rahuspatil.in/nodeminiadmin/demo">Live Demo</a>
+<br><a href="https://nodeminiadmin.herokuapp.com/index">Live Demo</a>
 
 ## The WOW factors
 **_-Ease of use_**
