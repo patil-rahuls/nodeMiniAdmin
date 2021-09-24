@@ -39,7 +39,7 @@ Navigate to `https://localhost:3000/index` in your browser to use the app.
 <a href="https://rahulspatil.in/projects/nodeminiadmin">Project Page</a>
 <br><a href="https://nodeminiadmin.herokuapp.com/index">Live Demo</a>
 
-## The WOW factors
+## Why use nodeMiniAdmin
 **_-Ease of use_**
 <br>**_-No framework used_**
 <br>**_-Easy to setup_**
