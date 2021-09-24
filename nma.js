@@ -349,7 +349,7 @@ const indexHandler = (response, callback) => {
     </table>
     <div style="height: 10px;z-index: 77777;background: grey;width: 100%;margin-top: 26px;position: fixed;"></div>
     <table id="resultTable">
-    <tbody style="margin-top:10px !important;position:absolute; margin-bottom:30px;">
+    <tbody style="margin-top:10px !important;position:absolute !important; padding-bottom:30px !important;padding-right:10px !important;">
     <tr>
     ${(function(){
     let tempHTML = ``;
