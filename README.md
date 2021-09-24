@@ -36,7 +36,7 @@ git clone https://github.com/patil-rahuls/nodeMiniAdmin.git
 Navigate to `https://localhost:3000/index` in your browser to use the app.
 
 ## Links
-<a href="rahuspatil.in/nodeminiadmin/">Project Page</a>
+<a href="https://rahuspatil.in/projects/nodeminiadmin/">Project Page</a>
 <br><a href="https://nodeminiadmin.herokuapp.com/index">Live Demo</a>
 
 ## The WOW factors
