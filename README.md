@@ -24,16 +24,14 @@
 ## About nodeMiniAdmin
 Its a minimal and lightweight tool for quick and easy access to MySQL databases. Focused on usability and simplicity. Written in Javascript, its a single-file app and requires Node.js to run. Its very easy to setup and use.
 
-## How to install
+## How to install and run
 1. Download or clone this repo to a directory of your choice.
 ```
 git clone https://github.com/patil-rahuls/nodeMiniAdmin.git
 ```
 2. Install Node.js (if you haven't already) on your machine.
 3. Open up terminal in the directory (where the file `nma.js` exists) and execute `node nma`.
-
-~~4. It might ask you to install the `sync-mysql` module. Please install it and repeat step 3.~~
-[Update v2.0] On the first run, the script will automatically install the required dependency and start the app.
+4. ~~It might ask you to install the `sync-mysql` module. Please install it and repeat step 3.~~<br>**[Update v2.0] On the first run, the script will automatically install the required dependency and start the app.**
 
 Navigate to `https://localhost:3000/index` in your browser to use the app.
 
@@ -52,5 +50,6 @@ Links coming soon...
 ## Troubleshooting
 1. If port 3000 is already in use or blocked, free it up using the following commands.
 <br>linux users: <br>`sudo fuser -k 8000/tcp`
-OSX users  : <br>`sudo lsof -t -i tcp:8000 | xargs kill -9`
-2. If you encounter file I/O errors or exceptions, try running the app with elevated privileges <br>`sudo node nma`.
+<br>OSX users  : <br>`sudo lsof -t -i tcp:8000 | xargs kill -9`
+2. If you encounter file I/O errors or exceptions, try running the app with elevated privileges
+<br>`sudo node nma`
