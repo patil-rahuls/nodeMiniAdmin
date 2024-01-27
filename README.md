@@ -31,6 +31,7 @@ git clone https://github.com/patil-rahuls/nodeMiniAdmin.git
 ```
 2. Install Node.js (if you haven't already) on your machine.
 3. Open up terminal in the directory (where the file `nma.js` exists) and execute `node nma`.
+
 ~~4. It might ask you to install the `sync-mysql` module. Please install it and repeat step 3.~~
 [Update v2.0] On the first run, the script will automatically install the required dependency and start the app.
 
