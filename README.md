@@ -1,11 +1,11 @@
 <p align="center">
-<img src="https://img.shields.io/badge/Version-1.0.0-blue">&nbsp;&nbsp;&nbsp; 
-<img src="https://img.shields.io/badge/Open Source-♥-red">&nbsp;&nbsp;&nbsp; 
+<img src="https://img.shields.io/badge/Version-2.0-blue">&nbsp;&nbsp;&nbsp;
+<img src="https://img.shields.io/badge/Open Source-♥-red">&nbsp;&nbsp;&nbsp;
 <img src="https://img.shields.io/badge/Platform-linux | windows | macos-9cf">&nbsp;&nbsp;&nbsp;
-<img src="https://img.shields.io/badge/Node.js-14.7.6-yellowgreen">&nbsp;&nbsp;&nbsp; 
-<img src="https://img.shields.io/badge/Frameworks-None-blueviolet">&nbsp;&nbsp;&nbsp; 
-<img src="https://img.shields.io/badge/license-GPL 3.0-lightgrey">&nbsp;&nbsp;&nbsp; 
-<img src="https://img.shields.io/badge/Contributions-Welcome-brightgreen">&nbsp;&nbsp;&nbsp; 
+<img src="https://img.shields.io/badge/Node.js-14.7.6-yellowgreen">&nbsp;&nbsp;&nbsp;
+<img src="https://img.shields.io/badge/Frameworks-None-blueviolet">&nbsp;&nbsp;&nbsp;
+<img src="https://img.shields.io/badge/license-GPL 3.0-lightgrey">&nbsp;&nbsp;&nbsp;
+<img src="https://img.shields.io/badge/Contributions-Welcome-brightgreen">&nbsp;&nbsp;&nbsp;
 </p>
 
 <h1 align="center"> nodeMiniAdmin</h1>
@@ -30,16 +30,18 @@ Its a minimal and lightweight tool for quick and easy access to MySQL databases.
 git clone https://github.com/patil-rahuls/nodeMiniAdmin.git
 ```
 2. Install Node.js (if you haven't already) on your machine.
-3. Open up terminal in the directory (where the file `nma.js` exists) and execute `node nma.js`.
-4. It might ask you to install the `sync-mysql` module. Please install it and repeat step 3.
+3. Open up terminal in the directory (where the file `nma.js` exists) and execute `node nma`.
+~~4. It might ask you to install the `sync-mysql` module. Please install it and repeat step 3.~~
+[Update v2.0] On the first run, the script will automatically install the required dependency and start the app.
 
 Navigate to `https://localhost:3000/index` in your browser to use the app.
 
 ## Links
-<a href="https://rahulspatil.in/projects/nodeminiadmin">Project Page</a>
-<br><a href="https://nodeminiadmin.herokuapp.com/index">Live Demo</a>
+~~<a href="https://rahulspatil.in/projects/nodeminiadmin">Project Page</a>~~
+~~<br><a href="https://nodeminiadmin.herokuapp.com/index">Live Demo</a>~~
+Links coming soon...
 
-## Why use nodeMiniAdmin
+## 2hyse nodeMiniAdmin
 **_-Ease of use_**
 <br>**_-No framework used_**
 <br>**_-Easy to setup_**
@@ -48,6 +50,6 @@ Navigate to `https://localhost:3000/index` in your browser to use the app.
 
 ## Troubleshooting
 1. If port 3000 is already in use or blocked, free it up using the following commands.
-<br>linux users: <br>`sudo fuser -k 8000/tcp`  
-OSX users  : <br>`sudo lsof -t -i tcp:8000 | xargs kill -9`  
-2. If you encounter file I/O errors or exceptions, try running the app with elevated privileges <br>`sudo node nma.js`.
+<br>linux users: <br>`sudo fuser -k 8000/tcp`
+OSX users  : <br>`sudo lsof -t -i tcp:8000 | xargs kill -9`
+2. If you encounter file I/O errors or exceptions, try running the app with elevated privileges <br>`sudo node nma`.

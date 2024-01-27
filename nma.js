@@ -38,7 +38,7 @@ try {
   console.info("Just one last step.\nInstalling the required module 'sync-mysql'...");
   // Try to install sync-mysql on the go...
   child_process.execSync('npm install sync-mysql',{stdio:[0,1,2]});
-  // child_process.execSync('npm link sync-mysql',{stdio:[0,1,2]});
+  child_process.execSync('npm link sync-mysql',{stdio:[0,1,2]});
   console.info(`Done!`);
   // RESTART THE APP.
   child_process.execSync('node nma',{stdio:[0,1,2]});
@@ -70,7 +70,7 @@ var welcomeScreen = `
 ::  |_| |_|\\___/ \\__,_|\\___|_|  |_|_|_| |_|_/_/    \\_\\__,_|_| |_| |_|_|_| |_|    ::
 ::                                                                               ::
 ::                                                                               ::
-::   Version 1.0                                                                 ::
+::   Version 2.0                                                                 ::
 ::   (c) 2021 Rahul S. Patil <patil.rahuls@outlook.com>                          ::
 ::                                                                               ::
 ::   A Simple, Minimal and Lightweight tool for quick access to MySQL databases. ::
@@ -308,7 +308,7 @@ const indexHandler = (response, callback) => {
     </select>
     </form>
     </small>
-    <small class="right transparentBG"><i><span data-href="https://rahulspatil.in">nodeMiniAdmin Ver 1.0.0</span></i></small>
+    <small class="right transparentBG"><i><span data-href="https://rahulspatil.in">nodeMiniAdmin Ver 2.0</span></i></small>
     <small class="toggleQueryArea ${context.hideMainElements} info"> ▼ </small>
     <small class="execStmt ${context.hideMainElements} ok" > ▶ </small>
     </li>
@@ -454,7 +454,7 @@ const connectionsHandler = (response, callback) => {
   }
   // Prepare View
   const connectionsHTML = {
-    header : `<header><li> <small style="margin-top:-3px" class="left"><a href="../index">◀</a></small> <small class="right transparentBG"><i><span data-href="https://rahulspatil.in">nodeMiniAdmin Ver 1.0.0</span></i></small> </li></header>`,
+    header : `<header><li> <small style="margin-top:-3px" class="left"><a href="../index">◀</a></small> <small class="right transparentBG"><i><span data-href="https://rahulspatil.in">nodeMiniAdmin Ver 2.0</span></i></small> </li></header>`,
     content: `<div id="connection" style="margin-left:50px;margin-top:30px;"><form id="add" method="POST"><table><tr><th colspan="2">${context.Action}ing Connection <b>${context.connname}</b></th></tr><tr><td colspan="2">&nbsp;</td></tr><tr><td><label for="host">Host:</label></td> <td><input type="text" name="host" maxlength="255" required="" id="host" value="${context.host}"></td></tr><tr><td><label for="usr">Username:</label></td> <td><input type="text" name="usr" maxlength="100" required="" id="usr" value="${context.usr}"></td></tr><tr><td><label for="pass">Password:</label></td> <td><input type="password" name="pass" maxlength="255" required="" id="pass" value="${context.pass}"></td></tr><tr><td><label for="connname">Connection Alias:</label></td> <td><input type="text" name="connname" maxlength="100" required="" id="connname" value="${context.connname}"></td></tr><tr><td colspan="2">&nbsp;</td></tr><tr><th><button id="save" value="${context.Action}">Save</button></th><th>${context.message && context.result && '<span class="msg '+context.result+'">'+context.message+'</span>' || '<span class="msg loading hide">Please wait '+'<span class="loading loader__dot">.</span>'.repeat(3)+'</span>'}</th></tr></table><!--input name="edited" value="$ {context.edited}" class="hide" hidden--><input value="${context.id}" name="id" class="hide" hidden></form></div>`,
     footer : `<footer><li><span class="right">&nbsp;</span><span class="right">© <span data-href="https://rahulspatil.in">Rahul S. Patil</span></span></li></footer>`,
     script : `<script>for(const link of document.querySelectorAll('span[data-href]')){link.addEventListener('click', function(e){ window.open(e.target.getAttribute('data-href'), '_blank');}); }document.getElementById('save').onclick = function() {const saveForm = document.getElementById("add");for(const input of saveForm.elements){input.value = input.value.trim();if(!input.value)return;}document.querySelector('.loading').classList.remove('hide'); for( input of saveForm.elements) input.readOnly = true;saveForm.submit();}</script>`,
