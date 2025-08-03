@@ -40,7 +40,7 @@ Navigate to `https://localhost:3000/index` in your browser to use the app.
 ~~<br><a href="https://nodeminiadmin.herokuapp.com/index">Live Demo</a>~~
 Links coming soon...
 
-## 2hyse nodeMiniAdmin
+## Why use nodeMiniAdmin
 **_-Ease of use_**
 <br>**_-No framework used_**
 <br>**_-Easy to setup_**

@@ -1,50 +1,32 @@
+const PORT = 3000;
 const http = require('http');
 const fs = require('fs');
 const url = require('url');
 const qs = require('querystring');
-const performance = require('perf_hooks');
-const child_process = require('child_process');
+const { performance } = require('perf_hooks');
+const { execSync, spawn } = require('child_process');
 try {
-  // EXPERIMENTAL - WIP - Create package.json file on the go for the first time.
-  // fs.exists('package.json', exists => {
-  //   if (!exists) {
-  //     const packageJson = {
-  //       name: "nodeMiniAdmin",
-  //       version: "2.0",
-  //       description: "A Simple, Minimal and Lightweight tool for quick and easy access to MySQL databases. Written in Javascript.",
-  //       main: "nma.js",
-  //       scripts: {},
-  //       repository: {
-  //         type: "git",
-  //         url: "https://github.com/patil-rahuls/nodeMiniAdmin.git"
-  //       },
-  //       author: "Rahul S. Patil",
-  //       license: "https://github.com/patil-rahuls/nodeMiniAdmin/blob/master/LICENSE",
-  //       bugs: {
-  //         url: "https://github.com/patil-rahuls/nodeMiniAdmin/issues"
-  //       },
-  //       homepage: "https://github.com/patil-rahuls/nodeMiniAdmin/blob/master/README.md",
-  //       dependencies: {}
-  //     };
-  //     fs.writeFile("package.json", JSON.stringify(packageJson), err => {
-  //       !err && console.info("Created 'package.json' file !!");
-  //       err && console.warn("Try with elevated privileges (sudo / Administrator) !!") && process.exit();
-  //     });
-  //   }
-  // });
-  console.info("Checking the required module 'sync-mysql'...");
-  require.resolve('sync-mysql');
+  console.info("Checking the required package 'mysql2' ...");
+  require.resolve('mysql2');
 } catch (e) {
-  console.info("Just one last step.\nInstalling the required module 'sync-mysql'...");
-  // Try to install sync-mysql on the go...
-  child_process.execSync('npm install sync-mysql',{stdio:[0,1,2]});
-  child_process.execSync('npm link sync-mysql',{stdio:[0,1,2]});
-  console.info(`Done!`);
-  // RESTART THE APP.
-  child_process.execSync('node nma',{stdio:[0,1,2]});
-  // process.kill();
+  console.info("Just one last step.\nInstalling 'mysql2' ...");
+  execSync(`npm install mysql2`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Install failed: ${error.message}`);
+      return;
+    }
+    console.log("Installed mysql2 successfully.");
+    console.log("Restarting the app...");
+    // Step 2: Restart the app
+    const subprocess = spawn(process.argv[0], process.argv.slice(1), {
+      detached: true,
+      stdio: 'inherit'
+    });
+    subprocess.unref(); // Detach from parent
+    process.exit();     // Exit current process
+  });
 }
-const mysqlSync = require('sync-mysql');
+const mysqlConn = require('mysql2/promise.js');
 
 /*::::::::::::::::::::::::::::::::::::::
 :: HTML STATIC CONTENT                ::
@@ -58,7 +40,6 @@ const htmlContent = {
   SCRIPT: "const getCookie=function(name){let cookieValue=null; if (document.cookie && document.cookie !=''){const cookies=document.cookie.split(';'); for (let cookie of cookies){cookie=cookie.trim(); if (cookie.substring(0, name.length + 1)==(name + '=')){cookieValue=decodeURIComponent(cookie.substring(name.length + 1)); break;}}}return cookieValue;};const IsJsonString=function(str){try{JSON.parse(str);}catch (e){return false;}return true;};const links=document.querySelectorAll('span[data-href]');for(const link of links){link.addEventListener('click', function(e){window.open(e.target.getAttribute('data-href'), '_blank');});};const showMessage=function(msg , typeClass='ok'){const messageBox=document.getElementById('message'); messageBox.classList=[]; messageBox.classList.add('msg'); messageBox.classList.add(typeClass); if(typeClass==='loading'){for(const i of [0,0,0]) msg +=\"<span class='loader__dot' style='color:#313233'>.</span>\";}messageBox.innerHTML=msg;};const hideMessageAfter=function(timeout){setTimeout(function(timeout){document.getElementById('message').classList.add('hide');}, timeout);};const copyToClipboard=function(text){navigator.clipboard.writeText(text).then(function(){hideMessageAfter(1000); showMessage('Copied !');}, function(err){console.error('Async: Could not copy text: ', err);});};document.addEventListener('click',function(e){document.querySelector('#resultTable tbody').addEventListener('click', function(row){const cellText=row.target.closest('td')?.innerHTML; cellText && copyToClipboard(cellText);});});const loadConnectionForm=function(action){if(action=='edit') document.getElementById('editForm').submit(); else window.open('/connection', '_self');};const toggleSidebar=function(){document.getElementById('sidebar').classList.toggle('collapsed');};document.querySelector('.toggleSidebar').addEventListener('click', function(){toggleSidebar();});document.querySelector('.toggleQueryArea').addEventListener('click', function(){const queryArea=document.getElementById('queryArea').classList; this.textContent=queryArea.toggle('hide') ? ' ▼ ' : ' ▲ '; document.getElementById('sidebar').classList.contains('collapsed') || toggleSidebar();});document.getElementById('query').addEventListener('click', function(){const sidebar=document.getElementById('sidebar').classList; sidebar.contains('collapsed') || sidebar.toggle('collapsed');});document.querySelector('.exportCSV').addEventListener('click', function(){const rows=document.querySelectorAll('table#resultTable tr'); if(rows.length){const csv=[]; for(const eachRow of rows){const csvRow=[]; const colsOfEachRow=eachRow.querySelectorAll('td, th'); for(const eachColOfEachRow of colsOfEachRow){let cell=eachColOfEachRow.innerText.replace(/(\\r\\n|\\n|\\r)/gm, '').replace(/(\\s\\s)/gm, ' '); cell=cell.replace(/\"/g, ''); csvRow.push(cell);}csv.push(csvRow.join(';'));}const csvString=csv.join('\\n'); const filename='export_' + new Date().toLocaleDateString() + '.csv'; const link=document.createElement('a'); link.style.display='none'; link.setAttribute('target', '_blank'); link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString)); link.setAttribute('download', filename); document.body.appendChild(link); link.click(); document.body.removeChild(link);}else{showMessage('No results !!', 'err');}});const validate=function(stmt){showMessage('Checking Query ', 'loading'); const conn_id=document.getElementById('conn').value; const db=document.getElementById('db').value; const params='test=' + stmt + '&conn_id=' + conn_id + '&db=' + db; var http=new XMLHttpRequest(); http.open('POST', '/validate', true); http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); http.setRequestHeader('X-CSRFToken', getCookie('csrftoken')); http.onreadystatechange=function(){if (http.readyState==XMLHttpRequest.DONE){if(IsJsonString(http.responseText)){const explainTable=JSON.parse(http.responseText); if (typeof explainTable=='object'){document.getElementById('query').style.color='#fff !important'; showMessage(\"Query looks valid!! No errors found!! Check Browser's CONSOLE to view the result of EXPLAIN.\"); console.table(explainTable);}else{document.getElementById('query').style.color='orangered !important'; showMessage(explainTable || 'Please correct your query!', 'err');}}else showMessage('Something went wrong. This will be fixed in the next commit.', 'err'); hideMessageAfter(4000);}}; http.send(params);};const validateOnSemiColon=function(stmt){if (stmt.slice(-1)===';'){stmt=stmt.split(';')[0]; validate(stmt); document.getElementById('query').value=sqlFormatter.format(stmt,{language: 'mysql'});}};const execStmt=function(stmt){if(typeof stmt !=='string' || !stmt) stmt=document.getElementById('query').value; else document.getElementById('query').value=stmt; if (stmt.toUpperCase().includes('SELECT') && !stmt.toUpperCase().includes('LIMIT')){if (stmt[-1]==';'){stmt=stmt.slice(0,-1);}stmt +=' LIMIT 0,50';}document.getElementById('query').value=stmt; for (const i of [1,2,3,4]) localStorage.setItem('page-'+i, document.getElementById('page-'+i).value); showMessage('Executing Query ', 'loading'); saveTab(lastTabID); const db=document.getElementById('db').value; const params='test=' + stmt + '&db=' + db; var http=new XMLHttpRequest(); http.open('POST', '/queryHandler', true); http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); http.setRequestHeader('X-CSRFToken', getCookie('csrftoken')); http.onreadystatechange=function(){if (http.readyState==XMLHttpRequest.DONE){if(IsJsonString(http.responseText)){const resultSet=JSON.parse(http.responseText); console.log(resultSet); if (typeof resultSet=='object'){document.querySelector('#queryTime').textContent=Math.round(resultSet.queryTime)/1000 + ' Seconds'; document.querySelector('#recordsCount').textContent=resultSet.queryResultRows.length; showMessage(resultSet.message, resultSet.messageState); if(resultSet.queryResultFields.length){queryOk=true; let fieldsHTML='<tr>'; if (resultSet.queryResultFields){for (const field of resultSet.queryResultFields) fieldsHTML +='<th>' + field + '</th>';}fieldsHTML +='</tr>'; let rowsHTML=''; if (resultSet.queryResultRows){for (const row of resultSet.queryResultRows){rowsHTML +='<tr>'; for (const [,val] of Object.entries(row)) rowsHTML +='<td>' + val + '</td>'; rowsHTML +='</tr>';}}else rowsHTML +=\"<tr><td colspan='all'> No results found. </td></tr>\"; document.getElementById('resultTable').innerHTML= '<tbody style=\"margin-top:10px !important;position:absolute !important;padding-right:10px !important;padding-bottom:30px !important;\">' + fieldsHTML + rowsHTML + '</tbody>'; document.getElementById('resultArea').classList=''; document.getElementById('queryArea').classList=''; document.getElementById('queryArea').classList.add('hide'); document.querySelector('.toggleQueryArea').textContent=' ▼ '; if(queryOk && stmt.toUpperCase().includes('LIMIT')){const limits=stmt.split('LIMIT')[1].trim(); localStorage.setItem('limits', limits); for(const i of [1,2,3,4]){let to=''; const paginationBtn=document.getElementById('page-'+i); paginationBtn.classList.remove('active'); paginationBtn.value=localStorage.getItem('page-'+i); if(i>1) to=Number(paginationBtn.value.split(',')[0]) + 49; else to=50; paginationBtn.innerText=paginationBtn.value.split(',')[0] + '-' + to;}var pag_btn=document.querySelectorAll(\"button[value='\" + limits + \"']\")[0]; pag_btn && pag_btn.classList.add('active');}}else{document.getElementById('resultArea').classList=''; document.getElementById('queryArea').classList=''; document.getElementById('resultArea').classList.add('hide'); document.querySelector('.toggleQueryArea').textContent=' ▲ '; queryOk=false;}}else showMessage('Something went wrong. Please try refreshing the page', 'err');}else showMessage('Something went wrong. This will be fixed in the next commit.', 'err'); hideMessageAfter(4000);}}; http.send(params);};document.querySelector('.execStmt').addEventListener('click', execStmt);document.getElementById('query').addEventListener('focus', function(){this.style.color=queryOk ? '#00ff00' : 'orangered';});document.getElementById('query').addEventListener('keydown', function(eventObj){if (eventObj.ctrlKey && eventObj.keyCode==13){execStmt(this.value);}});const select_table=function(tbl){const qry = 'SELECT * FROM ' + tbl + ' LIMIT 0,50 '; if(confirm('Current tab\\'s content will be replaced with\\n\"'+qry+'\"\\nWant to proceed?',false)){document.getElementById('sidebar').classList.toggle('collapsed'); execStmt('SELECT * FROM ' + tbl + ' LIMIT 0,50 ');}};const selectRange=function (range){const stmtElem=document.getElementById('query'); let stmt=stmtElem.value; stmt=stmt.replace(/\\s\\s+/g, ' '); const limitPresent=stmt.lastIndexOf('LIMIT'); if (limitPresent) stmt=stmt.substring(0, limitPresent); stmtElem.value=stmt + ' LIMIT ' + range ; execStmt(stmtElem.value);};const scroll_pag=function(direction){switch(direction){case 2: for(const i of [1,2,3]){const paginationBtn=document.getElementById('page-'+i); paginationBtn.value=document.getElementById('page-'+(i+1)).value; paginationBtn.innerText=document.getElementById('page-'+(i+1)).innerText;}const lastPaginationBtn=document.getElementById('page-4'); const limits=lastPaginationBtn.value; const frm=parseInt(limits.split(',')[0]) + 50; const to=frm + 49; lastPaginationBtn.value=frm + ',' + 50; lastPaginationBtn.innerText=frm + '-' + to; break; case 4: const firstPaginationBtn=document.getElementById('page-1'); const lowest_limits=firstPaginationBtn.value; const lower_limit=parseInt(lowest_limits.split(',')[0]); if(lower_limit <=1){}else{for(const i of [4,3,2]){const paginationBtn=document.getElementById('page-'+i); paginationBtn.value=document.getElementById('page-'+(i-1)).value; paginationBtn.innerText=document.getElementById('page-'+(i-1)).innerText;}const to=lower_limit - 1; let frm=to - 50 + 1 ; if(frm==1) frm=0; firstPaginationBtn.value=frm + ',' + 50; firstPaginationBtn.innerText=frm + '-' + to;}break; default:break;}for (const i of [1,2,3,4]) document.getElementById('page-'+i).classList.remove('active'); var lmts=localStorage.getItem('limits'); var pag_btn=document.querySelectorAll(\"button[value='\" + lmts + \"']\")[0]; pag_btn && pag_btn.classList.add('active');};"
     + "(function(funcName, baseObj){funcName=funcName || 'docReady'; baseObj=baseObj || window; var readyList=[]; var readyFired=false; var readyEventHandlersInstalled=false; function ready(){if (!readyFired){readyFired=true; for (var i=0; i < readyList.length; i++){readyList[i].fn.call(window, readyList[i].ctx);}readyList=[];}}function readyStateChange(){if ( document.readyState==='complete' ){ready();}}baseObj[funcName]=function(callback, context){if (typeof callback !=='function'){throw new TypeError('callback for docReady(fn) must be a function');}if (readyFired){setTimeout(function(){callback(context);}, 1); return;}else{readyList.push({fn: callback, ctx: context});}if (document.readyState==='complete'){setTimeout(ready, 1);}else if (!readyEventHandlersInstalled){if (document.addEventListener){document.addEventListener('DOMContentLoaded', ready, false); window.addEventListener('load', ready, false);}else{document.attachEvent('onreadystatechange', readyStateChange); window.attachEvent('onload', ready);}readyEventHandlersInstalled=true;}}})('docReady', window);var lastTabID=localStorage.getItem('lastTabID') || 1 ;var maxTabs=6;const tabs=[];const saveTab=function(tabID){localStorage.setItem('tab'+tabID, document.getElementById('query').value);};const showTabContent=function(this_tab){saveTab(lastTabID); for (let i=1; i<=maxTabs; i++){document.querySelector(\"button[id='tab\"+ i + \"']\").classList.remove('active');}this_tab.classList.add('active'); document.getElementById('query').value=localStorage.getItem(this_tab.id); lastTabID=this_tab.id.slice(-1); localStorage.setItem('lastTabID' , lastTabID);};docReady(function(){const stmtTxtArea=document.getElementById('query'); stmtTxtArea.value=localStorage.getItem('tab'+lastTabID); document.querySelector(\"button[id='tab\" + lastTabID + \"']\").classList.add('active');console.log(`"+welcomeScreen+"`)});",
 };
-// Graphics : https://manytools.org/hacker-tools/ascii-banner/ Font - 'Big'
 var welcomeScreen = `
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ::                                                                               ::
@@ -79,10 +60,8 @@ var welcomeScreen = `
 ::   Author  : Rahul S. Patil                                                    ::
 ::   GitHub  : https://github.com/patil-rahuls/nodeMiniAdmin                     ::
 ::                                                                               ::
-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::`;
-// MySQL Connection
-let connection = {};
-
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+`;
 
 /*::::::::::::::::::::::::::::::::::::::
 :: ROUTE HANDLERS                     ::
@@ -98,59 +77,54 @@ const getConnections = (connId=0) => {
 const addUpdateConnection = context => {
   const data = fs.readFileSync('connections.json');
   if(!data) {
-    console.log("Failed. File 'connections.json' not found. Try running this app with Elevated Privileges.");
+    console.error("Error: File 'connections.json' not found. Try running this app with Elevated Privileges.");
     context.result = "err";
-    context.message = "Failed. Try Elevated Privileges. Please Check logs.";
+    context.message = "Please try running this app with Elevated Privileges. Check server logs for more info.";
     return context;
   }
   let connections = JSON.parse(data);
   let connectionsOld = JSON.parse(data);
-  let duplicate = false;
+  let duplicate;
   // UPDATE
   if(context.id > 0) {
     // Prevent duplicate connections
-    for(const [conn_id , { host, usr, connname }] of Object.entries(connections)){
-      if(conn_id != context.id && host == context.host && usr == context.usr) {
-        context.result = "err";
-        context.message = "Failed. Connection already exists.";
-        duplicate = true;
-        break;
-      }
-      else if (conn_id != context.id && connname == context.connname){
-        context.result = "err";
-        context.message = "Failed. Please use a unique Connection Alias.";
-        duplicate = true;
-        break;
-      }
+    const isDuplicate = Object.entries(connections).find(([conn_id , { host, port, usr, connname }]) =>
+      conn_id != context.id
+      && (
+        (host == context.host && port == context.port && usr == context.usr)
+        ||
+        connname == context.connname
+      )
+    );
+    if(isDuplicate && Object.keys(isDuplicate).length){
+      context.result = "err";
+      context.message = "Failed. Connection already exists.";
+      duplicate = true;
     }
     if(!duplicate) {
       connections[context.id]['host'] = context.host;
+      connections[context.id]['port'] = context.port;
       connections[context.id]['usr'] = context.usr;
       connections[context.id]['pass'] = context.pass;
       connections[context.id]['connname'] = context.connname;
     }
-  }
-  // ADD
-  else{
+  } else {// ADD
     let id = Object.keys(connections).length + 1;
-    // Add new connection only if host, userame and alias is different.
-    for({ host, usr, connname } of Object.values(connections)){
-      if(host == context.host && usr == context.usr) {
-        context.result = "err";
-        context.message = "Failed. Connection already exists.";
-        duplicate = true;
-        break;
-      }
-      else if (connname == context.connname){
-        context.result = "err";
-        context.message = "Failed. Please use a unique Connection Alias.";
-        duplicate = true;
-        break;
-      }
+    // Prevent duplicate connections
+    const isDuplicate = Object.values(connections).find(({ host, port, usr, connname }) =>
+      (host == context.host && port == context.port && usr == context.usr)
+      ||
+      connname == context.connname
+    );
+    if(isDuplicate && Object.keys(isDuplicate).length){
+      context.result = "err";
+      context.message = "Failed. Connection already exists.";
+      duplicate = true;
     }
     if(!duplicate) {
       connections[id] = {
         host : context.host,
+        port : context.port,
         usr : context.usr,
         pass : context.pass,
         connname : context.connname,
@@ -159,36 +133,43 @@ const addUpdateConnection = context => {
     }
   }
   if(JSON.stringify(connections) !== JSON.stringify(connectionsOld)) {
-    let ok = true;
+    let ok;
     try{
       fs.writeFileSync(
         'connections.json',
         JSON.stringify(connections),
         function(err) {
           if(err){
-            console.log(err);
-            ok = false;
+            console.error(err);
           }
         }
       );
+      ok = true;
+    } catch {
+      ok = false;
     }
-    catch{ ok = false; }
     if(ok){
       context.result = "ok";
       context.message = "Connection Saved Successfully";
-    }else{
+    } else {
       context.result = "err";
       context.message = "Failed. Couldn't write to connections file.";
     }
-  }
-  else if(context.id > 0 && !duplicate) {
+  } else if (context.id > 0 && !duplicate) {
     context.result = "loading";
     context.message = "Ignored. No changes deteted.";
   }
   return context;
 };
+
+/*::::::::::::::::::::::::::::::::::::::
+:: MAIN HANDLER                       ::
+::::::::::::::::::::::::::::::::::::::*/
+// MySQL Connection
+let connection = {};
+
 // Handler - Main App
-const indexHandler = (response, callback) => {
+const indexHandler = async (response, callback) => {
   const resp = response.buffer;
   const allConns = getConnections();
   const context = {
@@ -206,7 +187,7 @@ const indexHandler = (response, callback) => {
     statusState: `err`,
     status: `Not connected`,
   };
-  // Logic
+
   if (!context.conn || !Object.keys(allConns).length) {
     context.message = 'Please select or create a MySQL connection.';
     context.messageState = "err";
@@ -214,59 +195,73 @@ const indexHandler = (response, callback) => {
     const connObj = allConns[context.conn];
     let queryResult = [];
     let ok = true;
-    // MySQL Connection Object / Client
-    connection = new mysqlSync({
-      host : connObj.host,
-      user : connObj.usr,
-      password : connObj.pass,
-    });
-    // Get databases and Handle db connection error
     try{
-      queryResult = connection.query(`SHOW DATABASES ;`);
-      for(const row of queryResult)
+      // MySQL Connection Object / Client
+      const pool = mysqlConn.createPool({
+        host: connObj.host,
+        port: connObj.port || 3306,
+        user: connObj.usr,
+        password: connObj.pass,
+        waitForConnections: true,
+        connectionLimit: 2,
+        // idleTimeout: 60000, // idle connections timeout, in milliseconds, the default value 60000
+        queueLimit: 0,
+        enableKeepAlive: true,
+        keepAliveInitialDelay: 0
+      });
+      connection = await pool.getConnection();
+      // connection = pool;
+
+      // Get databases and Handle db connection error
+      [ queryResult ] = await connection.execute(`SHOW DATABASES ;`);
+      for(const row of queryResult){
         context.databases.add(row.Database);
-    }
-    catch(err) {
-      err +="";
-      console.log(err);
+      }
+    } catch(err) {
+      err+="";
+      console.error(err);
       context.messageState = "err";
-      if(err.includes("getaddrinfo"))
-        context.message = "Invalid Host. Please correct your MySQL Connection's host and try again!";
-      else if(err.includes("ER_ACCESS_DENIED_ERROR"))
-        context.message = "Access Denied. Please correct your MySQL Connection's credentials and try again!";
-      else
-        context.message = "Please correct your MySQL Connection's credentials and try again!";
+      if(err.includes("ETIMEDOUT")){
+        context.message = "Connection Timed-out. Please try again!";
+      } else if(err.includes("AggregateError")){
+        context.message = "ECONNREFUSED. Is your DB server running?";
+      } else if(err.includes("getaddrinfo")){
+        context.message = "Invalid Host. Please correct your DB Connection's host and try again!";
+      } else if (err.includes("Access denied")){
+        context.message = "Access Denied. Please correct your DB Connection's credentials and try again!";
+      } else {
+        context.message = "Please correct your DB Connection's credentials and try again!";
+      }
       ok = false;
     }
     if(ok && context.databases.size){
       if (context.db == "Not Selected") {
         context.message = "Please select a Database to connect!";
         context.messageState = "loading";
-      }
-      else{
-        connection.query(`USE ${context.db} ;`);
-        queryResult = connection.query(`SELECT table_name FROM information_schema.tables WHERE table_schema = ? ;`, [context.db]);
-        for(const row of queryResult)
-          context.tables.add(row.table_name);
+      } else {
+        await connection.query(`USE ${context.db} ;`);
+        [ queryResult ] = await connection.execute(`SELECT table_name FROM information_schema.tables WHERE table_schema = ? ;`, [context.db]);
+        for(const row of queryResult){
+          context.tables.add(row.TABLE_NAME);
+        }
         context.statusState ="ok";
         context.status = "Connected";
         if(context.tables.size){
           context.message = "Connected successfully! Start Querying !";
           context.messageState = "ok";
-        }
-        else{
+        } else {
           context.message = "Connected successfully! But no table found in this database.";
           context.messageState = "loading";
         }
       }
-    }
-    else{
+    } else {
       ok && (context.messageState = "loading");
       ok && (context.message = "No Database Found!");
     }
   }
-  if (!context.conn)
+  if (!context.conn){
     context.hideEditConnection = 'hide';
+  }
   if (!context.conn || context.db=="Not Selected" || context.statusState.includes("err")){
     context.hideMainElements = "hide";
     context.queryAreaState = "hide";
@@ -411,6 +406,7 @@ const connectionsHandler = (response, callback) => {
     id:0,
     Action : 'Add',
     host:"",
+    port: "3306",
     usr:"",
     pass:"",
     connname:"",
@@ -421,20 +417,23 @@ const connectionsHandler = (response, callback) => {
   if(response.method.toLowerCase() == "post") {
     const respKeys = Object.keys(resp);
     const contextKeys = Object.keys(context);
-    // Check if 'resp' object has properties 'host','usr', 'pass', 'connname' and 'id' which exist object 'context'.
+    // Check if 'resp' object has properties 'host','port','usr', 'pass', 'connname' and 'id' which exist in object 'context'.
     // If yes, user is already editing the connection.
     if(respKeys.every( prop => contextKeys.includes(prop))) {
       context.id = resp.id;
-      if(resp.id > 0)
+      if(resp.id > 0){
         context.Action = "Edit";
+      }
       context.host = resp.host;
+      context.port = resp.port;
       context.usr = resp.usr;
       context.pass = resp.pass;
       context.connname = resp.connname;
-      if (context.host && context.usr && context.pass && context.connname)
+      if (context.host && context.port && context.usr && context.pass && context.connname){
         context = addUpdateConnection(context);
-      else
+      } else {
         context.message = "Failed. All fields are required !!";
+      }
     }
     // Else, user has just started editing the connection. i.e. clicked on Edit button.
     else if(respKeys.includes("startedEditing") && respKeys.includes("id") && respKeys.length == 2){
@@ -442,49 +441,52 @@ const connectionsHandler = (response, callback) => {
       context.id = resp.id;
       context.Action =  'Edit';
       context.host =  conn.host;
+      context.port =  conn.port;
       context.usr =  conn.usr;
       context.pass =  conn.pass;
       context.connname = conn.connname;
       context.result = "";
     }
     // Else, user has sent wrong POST parameters, may be with POSTMAN, for no reason.
-    else
+    else {
       // possibly redirect to "/connection"
       context.message = "BAD REQUEST !!!";
+    }
   }
   // Prepare View
   const connectionsHTML = {
     header : `<header><li> <small style="margin-top:-3px" class="left"><a href="../index">◀</a></small> <small class="right transparentBG"><i><span data-href="https://rahulspatil.in">nodeMiniAdmin Ver 2.0</span></i></small> </li></header>`,
-    content: `<div id="connection" style="margin-left:50px;margin-top:30px;"><form id="add" method="POST"><table><tr><th colspan="2">${context.Action}ing Connection <b>${context.connname}</b></th></tr><tr><td colspan="2">&nbsp;</td></tr><tr><td><label for="host">Host:</label></td> <td><input type="text" name="host" maxlength="255" required="" id="host" value="${context.host}"></td></tr><tr><td><label for="usr">Username:</label></td> <td><input type="text" name="usr" maxlength="100" required="" id="usr" value="${context.usr}"></td></tr><tr><td><label for="pass">Password:</label></td> <td><input type="password" name="pass" maxlength="255" required="" id="pass" value="${context.pass}"></td></tr><tr><td><label for="connname">Connection Alias:</label></td> <td><input type="text" name="connname" maxlength="100" required="" id="connname" value="${context.connname}"></td></tr><tr><td colspan="2">&nbsp;</td></tr><tr><th><button id="save" value="${context.Action}">Save</button></th><th>${context.message && context.result && '<span class="msg '+context.result+'">'+context.message+'</span>' || '<span class="msg loading hide">Please wait '+'<span class="loading loader__dot">.</span>'.repeat(3)+'</span>'}</th></tr></table><!--input name="edited" value="$ {context.edited}" class="hide" hidden--><input value="${context.id}" name="id" class="hide" hidden></form></div>`,
+    content: `<div id="connection" style="margin-left:50px;margin-top:30px;"><form id="add" method="POST"><table><tr><th colspan="2">${context.Action}ing Connection <b>${context.connname}</b></th></tr><tr><td colspan="2">&nbsp;</td></tr><tr><td><label for="host">Host:</label></td> <td><input type="text" name="host" maxlength="255" required="" id="host" value="${context.host}"></td></tr><tr><td><label for="port">Port:</label></td> <td><input type="text" name="port" maxlength="6" required="" id="port" value="${context.port || 3306}"></td></tr><tr><td><label for="usr">Username:</label></td> <td><input type="text" name="usr" maxlength="100" required="" id="usr" value="${context.usr}"></td></tr><tr><td><label for="pass">Password:</label></td> <td><input type="password" name="pass" maxlength="255" required="" id="pass" value="${context.pass}"></td></tr><tr><td><label for="connname">Connection Alias:</label></td> <td><input type="text" name="connname" maxlength="100" required="" id="connname" value="${context.connname}"></td></tr><tr><td colspan="2">&nbsp;</td></tr><tr><th><button id="save" value="${context.Action}">Save</button></th><th>${context.message && context.result && '<span class="msg '+context.result+'">'+context.message+'</span>' || '<span class="msg loading hide">Please wait '+'<span class="loading loader__dot">.</span>'.repeat(3)+'</span>'}</th></tr></table><!--input name="edited" value="$ {context.edited}" class="hide" hidden--><input value="${context.id}" name="id" class="hide" hidden></form></div>`,
     footer : `<footer><li><span class="right">&nbsp;</span><span class="right">© <span data-href="https://rahulspatil.in">Rahul S. Patil</span></span></li></footer>`,
-    script : `<script>for(const link of document.querySelectorAll('span[data-href]')){link.addEventListener('click', function(e){ window.open(e.target.getAttribute('data-href'), '_blank');}); }document.getElementById('save').onclick = function() {const saveForm = document.getElementById("add");for(const input of saveForm.elements){input.value = input.value.trim();if(!input.value)return;}document.querySelector('.loading').classList.remove('hide'); for( input of saveForm.elements) input.readOnly = true;saveForm.submit();}</script>`,
+    script : `<script>for(const link of document.querySelectorAll('span[data-href]')){link.addEventListener('click', function(e){ window.open(e.target.getAttribute('data-href'), '_blank');}); }document.getElementById('save').onclick = function() {const saveForm = document.getElementById("add");for(const input of saveForm.elements){input.value = input.value.trim();if(!input.value)return;}document.querySelector('.loading')?.classList.remove('hide'); for( input of saveForm.elements) input.readOnly = true;saveForm.submit();}</script>`,
   };
   const connectionsView = `<!DOCTYPE html><html>${htmlContent.HEAD()}<body>${connectionsHTML.header} ${connectionsHTML.content} ${connectionsHTML.footer} ${connectionsHTML.script}</body></html>`;
   // Render
   callback(200, connectionsView);
 };
 // Handler - Validate query via AJAX
-const validateQuery = (response, callback) => {
-  let validationResult = "";
-  const resp = response.buffer;
-  const _query = resp.test.replace(/(\r\n|\n|\r)/g," ").trim() || "";
-  if (_query) {
-    if(['SELECT' , 'INSERT' , 'DELETE' , 'REPLACE' , 'UPDATE' ].includes(_query.split(" ")[0].toUpperCase())){
-      try{
-        connection.query(`USE ${resp.db} ;`);
-        validationResult = connection.query(`EXPLAIN ` + _query);
-      }
-      catch(err) {
-        err +="";
-        console.log(err);
-        validationResult = err;
-      }
-    }
-  }
-  callback(200, JSON.stringify(validationResult));
+const validateQuery = async (response, callback) => {
+  console.log(`ToDo - EXPLAIN command curently not supported! Stay tuned. Thanks!`);
+  // let validationResult = "";
+  // const resp = response.buffer;
+  // const _query = resp.test.replace(/(\r\n|\n|\r)/g," ").trim() || "";
+  // if (_query) {
+  //   if(['SELECT' , 'INSERT' , 'DELETE' , 'REPLACE' , 'UPDATE' ].includes(_query.split(" ")[0].toUpperCase())){
+  //     try{
+  //       await connection.execute(`USE ${resp.db} ;`);
+  //       [ validationResult ] = await connection.execute(`EXPLAIN ${_query} ;`);
+  //       console.log(validationResult);
+  //     } catch(err) {
+  //       err +="";
+  //       console.log(err);
+  //       validationResult = err;
+  //     }
+  //   }
+  // }
+  // callback(200, JSON.stringify(validationResult));
 };
 // Handler - Execute query via AJAX
-const queryHandler = (response, callback) => {
+const queryHandler = async (response, callback) => {
   const resp = response.buffer;
   const context = {
     messageState:`hide`,
@@ -496,14 +498,15 @@ const queryHandler = (response, callback) => {
     queryTime: 0,
   };
   const _query = resp.test.replace(/(\r\n|\n|\r)/g," ").trim() || "";
+  console.info(`ToDo - Save log history locally.`);
   if (_query) {
     try{
       let queryResult = [];
-      connection.query(`USE ${resp.db} ;`);
+      await connection.query(`USE ${resp.db} ;`);
       // DQL
       if(['SELECT', 'SHOW'].includes(_query.split(" ")[0].toUpperCase())){
         const tic = performance.now();
-        queryResult = connection.query(_query);
+        [ queryResult ] = await connection.execute(_query);
         context.queryTime = "" + performance.now() - tic;
 
         if(queryResult.length>0){
@@ -512,31 +515,31 @@ const queryHandler = (response, callback) => {
           context.resultAreaState = "";
           context.queryAreaState = "hide";
           context.queryResultFields = Object.keys(queryResult[0]);
-          for (const [ , row] of Object.entries(queryResult))
+          for (const [ , row] of Object.entries(queryResult)){
             context.queryResultRows.push(row);
-        }else{
+          }
+        } else {
           context.message = "No results found !!";
           context.messageState = "err";
         }
-      }
-      // Everything except DQL like DML, DDLs etc
-      else{
-        queryResult = connection.query(_query);
+      } else {
+        // Everything except DQL like DML, DDLs etc
+        // ToDo - Validation: values should only be in single quotes. columns can be in backticks.
+        [ queryResult ] = await connection.execute(_query);
         if(typeof queryResult=="object" && Object.keys(queryResult).length){
-          context.message = "Statement executed successfully!";
+          // context.message = "Statement executed successfully!";
+          context.message = queryResult.info;
           context.messageState = "ok";
           context.queryResultFields = Object.keys(queryResult);
           context.queryResultRows.push(queryResult);
-        }else{
+        } else {
           context.message = "Statement execution failed! Please check your Statement.";
           context.messageState = "err";
         }
       }
-    }
-    catch(err) {
-      err +="";
-      console.log(err);
-      context.message = err;
+    } catch(err) {
+      console.error(err);
+      context.message = err.message;
       context.messageState = "err";
     }
   }
@@ -546,7 +549,7 @@ const queryHandler = (response, callback) => {
 /*::::::::::::::::::::::::::::::::::::::
 :: SERVER RELATED STUFF | DONT TOUCH  ::
 ::::::::::::::::::::::::::::::::::::::*/
-// Server and its related methods in one object
+// HTTP Server and its related methods in one object
 const nmaServer = {
   // ROUTING | URL CONFIGURATIONS
   allowedURLs : {
@@ -558,53 +561,49 @@ const nmaServer = {
 
   // Validates URL before routing to a handler
   validateURL: function(path) {
-    return this.allowedURLs.hasOwnProperty(path) && Object.entries(this.allowedURLs).some(([route]) => path === route);
+    return this.allowedURLs.hasOwnProperty(path) && Object.keys(this.allowedURLs).some(route => path === route);
   },
-};
 
-// HTTP Server
-nmaServer.handle = (request, response) => {
-  // HTTP method
-  const method = request.method.toLowerCase();
-  // Parse the incoming request url
-  const { pathname, query } = url.parse(request.url, true);
-  // buffer to hold the request body that might come with a POST or PUT request
-  let buffer = [];
-  request.on('error', error => {
-    console.log('Error Occurred', error);
-    response.writeHead(500);
-    response.end('Error occurred while processing HTTP request', error);
-  });
-  request.on('data', chunk => {
-    buffer.push(chunk);
-  });
-  request.on('end', () => {
-    buffer = Buffer.concat(buffer);
-    // Parse buffer so as to get request body
-    buffer = qs.parse(buffer.toString());
-    // Prepare the request data object to pass to the handler function
-    const responseData = {
-      method,
-      pathname,
-      query,
-      buffer,
-    };
-    // Retrieve the handler for the path
-    const handler = nmaServer.allowedURLs[pathname];
-    handler(responseData, (statusCode = 200, data = {}) => {
-      response.writeHead(statusCode);
-      response.end(data);
+  // HTTP Server request/response handler
+  handle: (request, response) => {
+    // HTTP method
+    const method = request.method.toLowerCase();
+    // Parse the incoming request url
+    const { pathname, query } = url.parse(request.url, true);
+    // buffer to hold the request body that might come with a POST or PUT request
+    let buffer = [];
+    request.on('error', error => {
+      console.error('Error Occurred', error);
+      response.writeHead(500);
+      response.end('Error occurred while processing HTTP request', error);
     });
-  });
+    request.on('data', chunk => {
+      buffer.push(chunk);
+    });
+    request.on('end', () => {
+      buffer = Buffer.concat(buffer);
+      // Parse buffer so as to get request body
+      buffer = qs.parse(buffer.toString());
+      // Prepare the request data object to pass to the handler function
+      const responseData = {
+        method,
+        pathname,
+        query,
+        buffer,
+      };
+      // Retrieve the handler for the path
+      const handler = nmaServer.allowedURLs[pathname];
+      handler(responseData, (statusCode = 200, data = {}) => {
+        response.writeHead(statusCode);
+        response.end(data);
+      });
+    });
+  }
 };
 
-
-/*::::::::::::::::::::::::::::::::::::::
-:: SERVER INSTANCE                    ::
-::::::::::::::::::::::::::::::::::::::*/
 // Create and start HTTP Server Instance
-// http.createServer - accepts a callback which is called everytime a
-// request is made to the server.
+// http.createServer - accepts a callback which is called
+// everytime a request is made to the server.
 const httpServer = http.createServer((request, response) => {
   const pathname = url.parse(request.url, false).pathname;
   nmaServer.validateURL(pathname) && nmaServer.handle(request, response);
@@ -613,23 +612,23 @@ const httpServer = http.createServer((request, response) => {
 // Main IIFE - Checks & Initialize HTTP Server
 // To do - check if port is already used by another process and
 // attempt to change the port and use that port.
-((port = 3000) => {
+((port = PORT) => {
   // 1. Create connections.json file if it doesn't exist.
-  fs.exists('connections.json', exists => {
+  fs.existsSync('connections.json', exists => {
     if (!exists) {
-      fs.writeFile("connections.json", JSON.stringify({}), err => {
+      fs.writeFileSync("connections.json", JSON.stringify({}), err => {
         !err && console.info("Created 'connections.json' file !!");
-        err && console.warn("Try with elevated privileges (sudo / Administrator) !!") && process.exit();
+        err && console.warn("Please try with elevated privileges (sudo / Administrator)!") && process.exit();
       });
     }
   });
 
   // 2. Start server.
   httpServer.listen(port, () => {
+    console.log(`${welcomeScreen}`);
     console.log(`
-    ${welcomeScreen}
-    nodeMiniAdmin started at port ${port}.
-    Please navigate to http://localhost:${port}/index in your browser.`
+     nodeMiniAdmin started!
+     Please navigate to http://localhost:${port}/index in your browser.`
     );
   });
 })();
