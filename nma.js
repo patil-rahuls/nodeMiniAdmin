@@ -614,14 +614,12 @@ const httpServer = http.createServer((request, response) => {
 // attempt to change the port and use that port.
 ((port = PORT) => {
   // 1. Create connections.json file if it doesn't exist.
-  fs.existsSync('connections.json', exists => {
-    if (!exists) {
-      fs.writeFileSync("connections.json", JSON.stringify({}), err => {
-        !err && console.info("Created 'connections.json' file !!");
-        err && console.warn("Please try with elevated privileges (sudo / Administrator)!") && process.exit();
-      });
-    }
-  });
+  if(!fs.existsSync('connections.json')){
+    fs.writeFileSync("connections.json", JSON.stringify({}), err => {
+      !err && console.info("Created 'connections.json' file !!");
+      err && console.warn("Please try with elevated privileges (sudo / Administrator)!") && process.exit();
+    });
+  }
 
   // 2. Start server.
   httpServer.listen(port, () => {
